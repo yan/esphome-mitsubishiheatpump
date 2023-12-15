@@ -454,6 +454,11 @@ void MitsubishiHeatPump::setup() {
             YESNO(this->get_hw_serial_() == &Serial)
     );
 
+//#ifdef EXTERNAL_UPDATE
+    ESP_LOGI(TAG, "Enabaling external update");
+    hp->enableExternalUpdate();
+//#endif
+
     ESP_LOGCONFIG(TAG, "Calling hp->connect(%p)", this->get_hw_serial_());
 
     if (hp->connect(this->get_hw_serial_(), this->baud_, -1, -1)) {
@@ -504,9 +509,11 @@ void MitsubishiHeatPump::dump_config() {
     ESP_LOGI(TAG, "  Supports HEAT: %s", YESNO(true));
     ESP_LOGI(TAG, "  Supports COOL: %s", YESNO(true));
     ESP_LOGI(TAG, "  Supports AWAY mode: %s", YESNO(false));
+    ESP_LOGI(TAG, "  Supports External Updates: %s", YESNO(true));
     ESP_LOGI(TAG, "  Saved heat: %.1f", heat_setpoint.value_or(-1));
     ESP_LOGI(TAG, "  Saved cool: %.1f", cool_setpoint.value_or(-1));
     ESP_LOGI(TAG, "  Saved auto: %.1f", auto_setpoint.value_or(-1));
+    hp->enableExternalUpdate();
 }
 
 void MitsubishiHeatPump::dump_state() {

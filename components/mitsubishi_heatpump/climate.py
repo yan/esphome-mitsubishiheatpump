@@ -15,6 +15,7 @@ from esphome.core import CORE, coroutine
 
 AUTO_LOAD = ["climate"]
 
+CONF_EXTERNAL_UPDATE = "external_update"
 CONF_SUPPORTS = "supports"
 DEFAULT_CLIMATE_MODES = ["HEAT_COOL", "COOL", "HEAT", "DRY", "FAN_ONLY"]
 DEFAULT_FAN_MODES = ["AUTO", "DIFFUSE", "LOW", "MEDIUM", "MIDDLE", "HIGH"]
@@ -46,6 +47,8 @@ CONFIG_SCHEMA = climate.CLIMATE_SCHEMA.extend(
         cv.Optional(CONF_UPDATE_INTERVAL, default="500ms"): cv.All(
             cv.update_interval, cv.Range(max=cv.TimePeriod(milliseconds=9000))
         ),
+        # Whether to respect external updates
+        cv.Optional(CONF_EXTERNAL_UPDATE, default=False): cv.boolean,
         # Optionally override the supported ClimateTraits.
         cv.Optional(CONF_SUPPORTS, default={}): cv.Schema(
             {
@@ -68,6 +71,10 @@ def to_code(config):
 
     if CONF_BAUD_RATE in config:
         cg.add(var.set_baud_rate(config[CONF_BAUD_RATE]))
+
+    print("Adding external update def ({})".format("two"))
+    if config[CONF_EXTERNAL_UPDATE]:
+        cg.add_define("EXTERNAL_UPDATE", True)
 
     supports = config[CONF_SUPPORTS]
     traits = var.config_traits()
